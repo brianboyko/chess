@@ -1,3 +1,5 @@
+var history = [];
+
 var map = {
   'A1': {'type': 'ROOK', 'color': 'white'},
   'B1': {'type': 'KNIGHT', 'color':'white'},
@@ -14,7 +16,7 @@ var map = {
   'E2': {'type': 'PAWN', 'color': 'white'},
   'F2': {'type': 'PAWN', 'color': 'white'},
   'G2': {'type': 'PAWN', 'color': 'white'},
-  'H2': {'type': 'PAWN', 'color': 'white'}
+  'H2': {'type': 'PAWN', 'color': 'white'},
   'A8': {'type': 'ROOK', 'color': 'white'},
   'B8': {'type': 'KNIGHT', 'color':'white'},
   'C8': {'type': 'BISHOP', 'color':'white'},
@@ -33,6 +35,19 @@ var map = {
   'H7': {'type': 'PAWN', 'color': 'white'}
 };
 
+var bishopTest = {
+  'B2': {'type': 'BISHOP', 'color': 'white'},
+  'B6': {'type': 'BISHOP', 'color': 'white'},
+  'D4': {'type': 'BISHOP', 'color': 'white'},
+  'F6': {'type': 'BISHOP', 'color': 'white'},
+  'F2': {'type': 'BISHOP', 'color': 'white'}
+};
+
+//dan is shamelessly doing vr in a coffee shop
+
+
+//grosse messe mozart 1782 & 1783 vienna fragmented (left incomplete)
+//why wasn't mozart out in america as an anti-abolitionist?
 //how do i return 'invalid entry' when the Key is not present in the
 //hash map>
 //each piece needs it's own validator
@@ -42,7 +57,7 @@ var map = {
 
 //first lets check if the destination is within range
 
-//how is the validator supposed to know what the range of a bishop?
+//how is the validator supposed to know what the rang``e of a bishop?
 
 //range validator
 
@@ -112,7 +127,9 @@ var map = {
 //if letter === 'a' 'b' 'c' etc.
 //then return num
 
-var intoNum = function(letter) {
+
+
+function intoNum(letter) {
   var reference = {
     'A': 1,
     'B': 2,
@@ -126,10 +143,66 @@ var intoNum = function(letter) {
   return reference[letter]
 }
 
+var Notation = function(number) {
+  var numMap = {
+    1: 'A',
+    2: 'B',
+    3: 'C',
+    4: 'D',
+    5: 'E',
+    6: 'F',
+    7: 'G',
+    8: 'H'
+  }
+  return numMap[number]
+}
+
+function isPathClear(array, nota2, board) {
+  var path = array
+  var pathClear = false
+  console.log(path)
+  var destination = path.length
+  //console.log(path.filter(function(e) {return map[e]}), '37')
+  if (path.filter(function(e) {return map[e]}).length > 0) {
+    console.log('path is greater than zero')
+    return false
+  }
+  else {
+    return true
+  }
+  for (var square = 0; square < path.length - 1; square++){
+    console.log(path[square], '39')
+    // if ((path[square] in board) && (square !== path[destination])) {
+    //   return path.filter(function(e))
+    // }
+    // else if ((path[square] in board) && (path[square] === path[destination])) {
+    //   return true
+    // }
+    // else if (path[square] in board) {
+    //   return false
+    // }
+  }
+}
+
+function arrayNotation(array) {
+  letter = Notation(array[0]);
+  number = array[1].toString();
+  return letter+number
+}
+
+function pathNotation(array) {
+  return array.map(function(e) {return arrayNotation(e)})
+}
+function outOfBounds(a, b) {
+  console.log('help')
+  return ((a < 9) && (b < 9));
+}
+
 function converter(notation) {
   return notation.toUpperCase();
 }
-var coordinates = function(position) {
+
+function coordinates(position) {
   var pair = [];
   pair.push(position.slice(0,1));
   pair.push(position.slice(1,2));
@@ -139,45 +212,98 @@ var coordinates = function(position) {
 }
 
 function pathVal(nota1, nota2, x, y) {
+  console.log('pathVal lines 89-107 adds steps to the path')
   var path = [];
   var step = [nota1[0], nota1[1]]
-  while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8)) {
+  while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0] - x) && (step[1] !== nota2[1] - y)) {
     step = [step[0]+x, step[1]+y]
-    path.push(step)
+    console.log(step)
+    if ((step[0] < 9) && (step[1] < 9)) {
+      path.push(step)
+    }
   }
+  console.log(path,nota2, 'this is path in pathVal')
   filtered = path.filter(function(e) {return (compare(e, nota2))})
-  if (filtered.length > 0) {
-    return true
+  console.log(filtered, 'here')
+  if (path.length > 0) {
+    return path
   }
   else { return false }
 }
 
 function compare(a, b) { return a[0] === b[0] && a[1] === b[1]}
 
-function incrementToEight(nota1, nota2) {
-  var initFirst = nota1[0]; var initSecond = nota1[1];
-  var telosFirst = nota2[0]; var telosSecond = nota2[1];
-  if ((telosFirst > initFirst) && (telosSecond > initSecond)) {
+function isDiagonalPathClear(nota1, nota2) {
+  var x1 = nota1[0]; var y1 = nota1[1];
+  var x2 = nota2[0]; var y2 = nota2[1];
+  if ((x2 > x1) && (y2 > y1)) {
+    console.log('check 112')
     var xDirection = 1;
     var yDirection = 1;
-    return pathVal(nota1, nota2, xDirection, yDirection);
+    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    if (path.length > 0) {
+      var notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota2, map)
+    }
+    else {return false}
   }
-  else if ((telosFirst > initFirst) && (telosSecond < initSecond)) {
+  else if ((x2 > x1) && (y2 < y1)) {
+    console.log('check125')
     var xDirection = 1;
     var yDirection = -1;
-    return pathVal(nota1, nota2, xDirection, yDirection);
+    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    console.log(path.length)
+    console.log(path.length)
+    if (path) {
+      console.log('check 128')
+      var notatedPath = pathNotation(path)
+      console.log(isPathClear(notatedPath, nota2, map))
+      return isPathClear(notatedPath, nota2, map)
+    }
+    else {return false}
+    //i don't need the rest of the arrays once end coordinates are in path
   }
-  else if((telosFirst < initFirst) && (telosSecond > initSecond)) {
+  else if((x2 < x1) && (y2 > y1)) {
+    console.log('check133')
     var xDirection = -1;
     var yDirection = 1;
-    return pathVal(nota1, nota2, xDirection, yDirection);
+    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    if (path.length > 0) {
+      var notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota2, map)
+    }
+    else {return false}
   }
-  else if((telosFirst < initFirst) && (telosSecond < initSecond)) {
+  else if((x2 < x1) && (y2 < y1)) {
+    console.log('check 145')
     var xDirection = -1;
     var yDirection = -1;
-    return pathVal(nota1, nota2, xDirection, yDirection);
+    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    if (path.length > 0) {
+      var notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota2, map)
+    }
+    else {return false}
   }
 }
+
+function move(begInput, endInput) {
+  var beginPos = begInput.toUpperCase();
+  var endPos = endInput.toUpperCase();
+  if (bishopTest.hasOwnProperty(beginPos)) {
+    beginPosCoor = coordinates(beginPos)
+    endPosCoor = coordinates(endPos)
+    console.log(beginPosCoor, endPosCoor)
+    if (bishopTest[beginPos].type === "BISHOP") {
+      if (isDiagonalPathClear(beginPosCoor, endPosCoor)) {
+        if (map[endPos].color === 'white') {
+          console.log('it works here')
+        }
+      }
+    }
+  }
+}
+//after it is true i want to take the path from pathval
 //here i have a function that returns a boolean
 //the function only checks one out of four relative quadrants
 //how do i expand the functionality to check the other quadrants so that
@@ -286,9 +412,29 @@ function incrementToEight(nota1, nota2) {
 //gotta get the piece and then see if notation2 is in path
 //must make a function that converts the note into a number pair array
 //
-function validator(board, notation1, notation2) {
-  var note1 = notation1.toUpperCase()
-  if (map.hasOwnProperty(note1)) (
-
-  )
+// function validator(notation1, notation2) {
+//   var note1 = notation1.toUpperCase()
+//   if (map.hasOwnProperty(note1)) {}
+// }
+if (move('D4', 'F2')) {
+  console.log('move valid')
 }
+else {
+  console.log('move invalid')
+}
+
+
+/* List of questions
+
+1) How does move know if black/white turn?
+ANSWER: Reference history for last move.
+2) How to tell if KING in check?
+3) How to tell if ROOK or KING moved?
+4) How to tell if PAWN vulnerable for EN PASSANT?
+5) How to trigger promotion?
+6) How to get white's move as default to start?
+ANSWER: If no history.length is < 1
+only white can move
+
+Only if move valid will there be history.push() &
+change of board state.
