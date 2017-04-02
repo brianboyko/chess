@@ -35,6 +35,87 @@ var map = {
   'H7': {'type': 'PAWN', 'color': 'white'}
 };
 
+/**
+ * whatColorForStartingPiece
+ * A function to determine what color a piece should be, based on its
+ *   starting position.
+ * @param  {string} startingPosition This is a string describing the starting position.
+ * @return {string} either 'white' or 'black'
+ */
+var whatColorForStartingPiece = function(startingPosition) {
+  // This grabs the second character of the starting position.
+  // If the character is either "7" or "8", it will fail the test and return black,
+  // otherwise it will return white.
+  return ('78'.indexOf(startingPosition.charAt(1)) === -1) ? 'white' : 'black';
+}
+
+/**
+ * whatRankForStartingPiece
+ *  Determines the rank of the starting piece based on if it is in a
+ *  pawn or noble row & what rank it is.
+ * @method whatRankForStartingPiece
+ * @param  {string} startingPosition This is a string describing the starting position.
+ * @return {string} The rank that should fill that position.
+ */
+var whatRankForStartingPiece = function(startingPosition) {
+  var row = startingPosition.charAt(1);
+  if(row === '7' || row === '2'){
+    return 'PAWN';
+  }
+  var col = startingPosition.charAt(0);
+  // we use the switch statement here to take advantage of the
+  // "fallthrough" inherent to switch statements.
+  switch(col){
+    case 'A':
+    case 'H':
+      return 'ROOK';
+    case 'B':
+    case 'G':
+      return 'KNIGHT';
+    case 'C':
+    case 'F':
+      return 'BISHOP';
+    case 'D':
+      return 'QUEEN';
+    case 'E':
+      return 'KING';
+    default:
+      throw new Error('This is not a valid starting position row');
+      break;
+  }
+  return null;
+}
+
+var makeStartingSquares = function(rows, cols){
+  let squares = [];
+  rows.forEach(function(row) {
+    cols.forEach(function(col) {
+      squares.push("" + col + row);
+    })
+  })
+  return squares;
+}
+
+var mapCreator = function(){
+  var rows = ['1', '2', '7', '8'];
+  var cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+  var startingSquares = makeStartingSquares(rows, cols);
+  console.log(startingSquares)
+}
+
+var createMap = function () {
+  var map = {};
+  var rookStartingPositions = ['A1', 'H1', 'A7', 'H7']
+  var rooks = ['A1', 'H1', 'A7', 'H7'].map(function(square){
+    var color = 'white';
+    if (square.slice(1) === '7' || square.slice === '8'){
+      color = 'black'
+    };
+    map[square] = {type: "ROOK", color: color}
+  })
+  return map;
+}
+
 var bishopTest = {
   'B2': {'type': 'BISHOP', 'color': 'white'},
   'B6': {'type': 'BISHOP', 'color': 'white'},
@@ -43,11 +124,10 @@ var bishopTest = {
   'F2': {'type': 'BISHOP', 'color': 'white'}
 };
 
-//dan is shamelessly doing vr in a coffee shop
 
 
-//grosse messe mozart 1782 & 1783 vienna fragmented (left incomplete)
-//why wasn't mozart out in america as an anti-abolitionist?
+
+
 //how do i return 'invalid entry' when the Key is not present in the
 //hash map>
 //each piece needs it's own validator
@@ -98,24 +178,6 @@ var bishopTest = {
 //on path
 //if valid the key is rewritten
 
-
-
-//the young are only attractive if they show pretention in presentation
-
-//an idea is to give both men and women in the exact same way
-
-//will commit my ideas to paper tonight for my nightly ritual and give
-//myself 3 reasons to wake up tomorrow morning
-
-//another thing to do is to listen to men the same way you listen to women
-
-//recognizing feminine gestures and intonations and de-eroticizing them
-
-//give myself a reason why this is important
-
-//look at men and women as worhol does
-
-//k q r b p
 
 //assume user input is passed to this function
 //just have it only take squares as input
@@ -376,34 +438,6 @@ function move(begInput, endInput) {
 //if the 1st smaller, 2nd larger (down to 1, up to 8)
 //if both are smaller (both down to 8)
 
-//
-//structure of great mass in c
-//-kyrie
-//-gloria
-    //gloria in excelsis deo
-    //laudamus te
-    //gratias agimus tibi
-    //domine deus
-    //qui tollis
-    //quaniam tu solus
-    //jesu christe
-//-credo
-    //credo unum deum
-    //et incarnatus est
-//-sanctus
-    //benedictus que venit
-
-//lat:domine deus tr: lord god
-//full lat:domine deus, rex coelestis, deus pater omnipotens
-//full tr: lord god, king of heaven, god father almighty
-
-//latin:et incarnatus est tr:and was made flesh
-//full:et incarnatus est de spiritu sancto
-//full tr: and was made flesh by the holy ghost
-//misere - have mercy, lord
-//
-//
-//
 //make the first letter into a number
 //so now I got an array the k & boardsquare
 //i need to change if
