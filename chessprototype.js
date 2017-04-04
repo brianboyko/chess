@@ -1,6 +1,6 @@
 var history = [];
 
-var map = {
+var board = {
   'A1': {'type': 'ROOK', 'color': 'white'},
   'B1': {'type': 'KNIGHT', 'color':'white'},
   'C1': {'type': 'BISHOP', 'color':'white'},
@@ -17,22 +17,22 @@ var map = {
   'F2': {'type': 'PAWN', 'color': 'white'},
   'G2': {'type': 'PAWN', 'color': 'white'},
   'H2': {'type': 'PAWN', 'color': 'white'},
-  'A8': {'type': 'ROOK', 'color': 'white'},
-  'B8': {'type': 'KNIGHT', 'color':'white'},
-  'C8': {'type': 'BISHOP', 'color':'white'},
-  'D8': {'type': 'QUEEN', 'color': 'white'},
-  'E8': {'type': 'KING', 'color': 'white'},
-  'F8': {'type': 'BISHOP', 'color': 'white'},
-  'G8': {'type': 'KNIGHT', 'color': 'white'},
-  'H8': {'type': 'ROOK', 'color': 'white'},
-  'A7': {'type': 'PAWN', 'color': 'white'},
-  'B7': {'type': 'PAWN', 'color': 'white'},
-  'C7': {'type': 'PAWN', 'color': 'white'},
-  'D7': {'type': 'PAWN', 'color': 'white'},
-  'E7': {'type': 'PAWN', 'color': 'white'},
-  'F7': {'type': 'PAWN', 'color': 'white'},
-  'G7': {'type': 'PAWN', 'color': 'white'},
-  'H7': {'type': 'PAWN', 'color': 'white'}
+  'A8': {'type': 'ROOK', 'color': 'black'},
+  'B8': {'type': 'KNIGHT', 'color':'black'},
+  'C8': {'type': 'BISHOP', 'color':'black'},
+  'D8': {'type': 'QUEEN', 'color': 'black'},
+  'E8': {'type': 'KING', 'color': 'black'},
+  'F8': {'type': 'BISHOP', 'color': 'black'},
+  'G8': {'type': 'KNIGHT', 'color': 'black'},
+  'H8': {'type': 'ROOK', 'color': 'black'},
+  'A7': {'type': 'PAWN', 'color': 'black'},
+  'B7': {'type': 'PAWN', 'color': 'black'},
+  'C7': {'type': 'PAWN', 'color': 'black'},
+  'D7': {'type': 'PAWN', 'color': 'black'},
+  'E7': {'type': 'PAWN', 'color': 'black'},
+  'F7': {'type': 'PAWN', 'color': 'black'},
+  'G7': {'type': 'PAWN', 'color': 'black'},
+  'H7': {'type': 'PAWN', 'color': 'black'}
 };
 
 /**
@@ -121,7 +121,7 @@ var bishopTest = {
   'B6': {'type': 'BISHOP', 'color': 'white'},
   'D4': {'type': 'BISHOP', 'color': 'white'},
   'F6': {'type': 'BISHOP', 'color': 'white'},
-  'F2': {'type': 'BISHOP', 'color': 'white'}
+  'F2': {'type': 'BISHOP', 'color': 'black'}
 };
 
 
@@ -222,10 +222,13 @@ var Notation = function(number) {
 function isPathClear(array, nota2, board) {
   var path = array
   var pathClear = false
+  console.log('225')
   console.log(path)
+  var numberOfPiecesOnPath = path.filter(function(e) {return board[e]}).length
+  console.log(numberOfPiecesOnPath)
   var destination = path.length
   //console.log(path.filter(function(e) {return map[e]}), '37')
-  if (path.filter(function(e) {return map[e]}).length > 0) {
+  if (numberOfPiecesOnPath > 0) {
     console.log('path is greater than zero')
     return false
   }
@@ -256,7 +259,6 @@ function pathNotation(array) {
   return array.map(function(e) {return arrayNotation(e)})
 }
 function outOfBounds(a, b) {
-  console.log('help')
   return ((a < 9) && (b < 9));
 }
 
@@ -273,8 +275,8 @@ function coordinates(position) {
   return pair
 }
 
-function pathVal(nota1, nota2, x, y) {
-  console.log('pathVal lines 89-107 adds steps to the path')
+function getDiagonalPath(nota1, nota2, x, y) {
+  console.log('getDiagonalPath lines 89-107 adds steps to the path')
   var path = [];
   var step = [nota1[0], nota1[1]]
   while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0] - x) && (step[1] !== nota2[1] - y)) {
@@ -284,7 +286,7 @@ function pathVal(nota1, nota2, x, y) {
       path.push(step)
     }
   }
-  console.log(path,nota2, 'this is path in pathVal')
+  console.log(path,nota2, 'this is path in getDiagonalPath')
   filtered = path.filter(function(e) {return (compare(e, nota2))})
   console.log(filtered, 'here')
   if (path.length > 0) {
@@ -295,32 +297,50 @@ function pathVal(nota1, nota2, x, y) {
 
 function compare(a, b) { return a[0] === b[0] && a[1] === b[1]}
 
+function isPawnPathClear(nota1, nota2, endNota, color) {
+  var x1 = nota1[0]; var y1 = nota1[1];
+  var x2 = nota2[0]; var y2 = nota2[1];
+  if (color === 'white') {
+    return (
+      (((x1 === x2) && (y1 < y2)) && ((y2 === y1+2) && (y1 === 2)) && (!(board[endNota])))
+        ||
+          ((y2 === y1+1) && (!(board[endNota])))
+            ||
+              (((x2 === x1+1) || (x2 === x1-1)) && ((y2 === y1+1) && (board[endNota])))
+            )
+  }
+  if (color === 'black') {
+    return (
+      ((((x1 === x2) && (y1 > y2)) && (y2 === y1-2) && y1 === 7) && (!(board[endNota])))
+        ||
+          ((y2 === y1-1) && (!(board[endNota])))
+            ||
+              (((x2 === x1+1) || (x2 === x1-1)) && (y2 === y1-1) && (board[endNota]))
+            )
+  }
+}
+
 function isDiagonalPathClear(nota1, nota2) {
   var x1 = nota1[0]; var y1 = nota1[1];
   var x2 = nota2[0]; var y2 = nota2[1];
   if ((x2 > x1) && (y2 > y1)) {
-    console.log('check 112')
     var xDirection = 1;
     var yDirection = 1;
-    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
     if (path.length > 0) {
       var notatedPath = pathNotation(path)
-      return isPathClear(notatedPath, nota2, map)
+      return isPathClear(notatedPath, nota2, board)
     }
     else {return false}
   }
   else if ((x2 > x1) && (y2 < y1)) {
-    console.log('check125')
     var xDirection = 1;
     var yDirection = -1;
-    var path = pathVal(nota1, nota2, xDirection, yDirection);
-    console.log(path.length)
-    console.log(path.length)
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
     if (path) {
-      console.log('check 128')
       var notatedPath = pathNotation(path)
-      console.log(isPathClear(notatedPath, nota2, map))
-      return isPathClear(notatedPath, nota2, map)
+      console.log(isPathClear(notatedPath, nota2, board))
+      return isPathClear(notatedPath, nota2, board)
     }
     else {return false}
     //i don't need the rest of the arrays once end coordinates are in path
@@ -329,10 +349,10 @@ function isDiagonalPathClear(nota1, nota2) {
     console.log('check133')
     var xDirection = -1;
     var yDirection = 1;
-    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
     if (path.length > 0) {
       var notatedPath = pathNotation(path)
-      return isPathClear(notatedPath, nota2, map)
+      return isPathClear(notatedPath, nota2, board)
     }
     else {return false}
   }
@@ -340,10 +360,10 @@ function isDiagonalPathClear(nota1, nota2) {
     console.log('check 145')
     var xDirection = -1;
     var yDirection = -1;
-    var path = pathVal(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
     if (path.length > 0) {
       var notatedPath = pathNotation(path)
-      return isPathClear(notatedPath, nota2, map)
+      return isPathClear(notatedPath, nota2, board)
     }
     else {return false}
   }
@@ -355,12 +375,15 @@ function move(begInput, endInput) {
   if (bishopTest.hasOwnProperty(beginPos)) {
     beginPosCoor = coordinates(beginPos)
     endPosCoor = coordinates(endPos)
-    console.log(beginPosCoor, endPosCoor)
+    // if (bishopTest[endPos]) {
+    //   console.log('there is something here')
+    //   if (bishopTest[endPos].color === bishopTest[beginPos].color) {
+    //     return false
+    //   }
+    // }
     if (bishopTest[beginPos].type === "BISHOP") {
       if (isDiagonalPathClear(beginPosCoor, endPosCoor)) {
-        if (map[endPos].color === 'white') {
-          console.log('it works here')
-        }
+        return true
       }
     }
   }
@@ -448,15 +471,16 @@ function move(begInput, endInput) {
 //
 // function validator(notation1, notation2) {
 //   var note1 = notation1.toUpperCase()
-//   if (map.hasOwnProperty(note1)) {}
+//   if (board.hasOwnProperty(note1)) {}
 // }
-if (move('D4', 'F2')) {
+if (move('D4', 'f2')) {
   console.log('move valid')
 }
 else {
   console.log('move invalid')
 }
 
+console.log(!(board[777]))
 
 /* List of questions
 
@@ -472,3 +496,4 @@ only white can move
 
 Only if move valid will there be history.push() &
 change of board state.
+*/
