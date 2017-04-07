@@ -1,52 +1,58 @@
 var history = [];
 
-var board = {
-  'A1': {'type': 'ROOK', 'color': 'white'},
-  'B1': {'type': 'KNIGHT', 'color':'white'},
-  'C1': {'type': 'BISHOP', 'color':'white'},
-  'D1': {'type': 'QUEEN', 'color': 'white'},
-  'E1': {'type': 'KING', 'color': 'white'},
-  'F1': {'type': 'BISHOP', 'color': 'white'},
-  'G1': {'type': 'KNIGHT', 'color': 'white'},
-  'H1': {'type': 'ROOK', 'color': 'white'},
-  'A2': {'type': 'PAWN', 'color': 'white'},
-  'B2': {'type': 'PAWN', 'color': 'white'},
-  'C2': {'type': 'PAWN', 'color': 'white'},
-  'D2': {'type': 'PAWN', 'color': 'white'},
-  'E2': {'type': 'PAWN', 'color': 'white'},
-  'F2': {'type': 'PAWN', 'color': 'white'},
-  'G2': {'type': 'PAWN', 'color': 'white'},
-  'H2': {'type': 'PAWN', 'color': 'white'},
-  'A8': {'type': 'ROOK', 'color': 'black'},
-  'B8': {'type': 'KNIGHT', 'color':'black'},
-  'C8': {'type': 'BISHOP', 'color':'black'},
-  'D8': {'type': 'QUEEN', 'color': 'black'},
-  'E8': {'type': 'KING', 'color': 'black'},
-  'F8': {'type': 'BISHOP', 'color': 'black'},
-  'G8': {'type': 'KNIGHT', 'color': 'black'},
-  'H8': {'type': 'ROOK', 'color': 'black'},
-  'A7': {'type': 'PAWN', 'color': 'black'},
-  'B7': {'type': 'PAWN', 'color': 'black'},
-  'C7': {'type': 'PAWN', 'color': 'black'},
-  'D7': {'type': 'PAWN', 'color': 'black'},
-  'E7': {'type': 'PAWN', 'color': 'black'},
-  'F7': {'type': 'PAWN', 'color': 'black'},
-  'G7': {'type': 'PAWN', 'color': 'black'},
-  'H7': {'type': 'PAWN', 'color': 'black'}
-};
+// var board = {
+//   'A1': {'type': 'ROOK', 'color': 'WHITE'},
+//   'B1': {'type': 'KNIGHT', 'color':'WHITE'},
+//   'C1': {'type': 'BISHOP', 'color':'WHITE'},
+//   'D1': {'type': 'QUEEN', 'color': 'WHITE'},
+//   'E1': {'type': 'KING', 'color': 'WHITE'},
+//   'F1': {'type': 'BISHOP', 'color': 'WHITE'},
+//   'G1': {'type': 'KNIGHT', 'color': 'WHITE'},
+//   'H1': {'type': 'ROOK', 'color': 'WHITE'},
+//   'A2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'B2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'C2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'D2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'E2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'F2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'G2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'H2': {'type': 'PAWN', 'color': 'WHITE'},
+//   'A8': {'type': 'ROOK', 'color': 'BLACK'},
+//   'B8': {'type': 'KNIGHT', 'color':'BLACK'},
+//   'C8': {'type': 'BISHOP', 'color':'BLACK'},
+//   'D8': {'type': 'QUEEN', 'color': 'BLACK'},
+//   'E8': {'type': 'KING', 'color': 'BLACK'},
+//   'F8': {'type': 'BISHOP', 'color': 'BLACK'},
+//   'G8': {'type': 'KNIGHT', 'color': 'BLACK'},
+//   'H8': {'type': 'ROOK', 'color': 'BLACK'},
+//   'A7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'B7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'C7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'D7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'E7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'F7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'G7': {'type': 'PAWN', 'color': 'BLACK'},
+//   'H7': {'type': 'PAWN', 'color': 'BLACK'},
+// };
+
+var pawnTest = {
+  'A4': {'type': 'PAWN', 'color': 'WHITE'},
+  'B4': {'type': 'PAWN', 'color': 'BLACK'},
+  'LASTMOVE:' : {'type': 'PAWN', 'color': 'WHITE', 'from': 'A2', 'to': 'A4'}
+}
 
 /**
  * whatColorForStartingPiece
  * A function to determine what color a piece should be, based on its
  *   starting position.
  * @param  {string} startingPosition This is a string describing the starting position.
- * @return {string} either 'white' or 'black'
+ * @return {string} either 'WHITE' or 'BLACK'
  */
 var whatColorForStartingPiece = function(startingPosition) {
   // This grabs the second character of the starting position.
-  // If the character is either "7" or "8", it will fail the test and return black,
-  // otherwise it will return white.
-  return ('78'.indexOf(startingPosition.charAt(1)) === -1) ? 'white' : 'black';
+  // If the character is either "7" or "8", it will fail the test and return BLACK,
+  // otherwise it will return WHITE.
+  return ('78'.indexOf(startingPosition.charAt(1)) === -1) ? 'WHITE' : 'BLACK';
 }
 
 /**
@@ -107,9 +113,9 @@ var createMap = function () {
   var map = {};
   var rookStartingPositions = ['A1', 'H1', 'A7', 'H7']
   var rooks = ['A1', 'H1', 'A7', 'H7'].map(function(square){
-    var color = 'white';
+    var color = 'WHITE';
     if (square.slice(1) === '7' || square.slice === '8'){
-      color = 'black'
+      color = 'BLACK'
     };
     map[square] = {type: "ROOK", color: color}
   })
@@ -117,11 +123,11 @@ var createMap = function () {
 }
 
 var bishopTest = {
-  'B2': {'type': 'BISHOP', 'color': 'white'},
-  'B6': {'type': 'BISHOP', 'color': 'white'},
-  'D4': {'type': 'BISHOP', 'color': 'white'},
-  'F6': {'type': 'BISHOP', 'color': 'white'},
-  'F2': {'type': 'BISHOP', 'color': 'black'}
+  'B2': {'type': 'BISHOP', 'color': 'WHITE'},
+  'B6': {'type': 'BISHOP', 'color': 'WHITE'},
+  'D4': {'type': 'BISHOP', 'color': 'WHITE'},
+  'F6': {'type': 'BISHOP', 'color': 'WHITE'},
+  'F2': {'type': 'BISHOP', 'color': 'BLACK'}
 };
 
 
@@ -132,7 +138,7 @@ var bishopTest = {
 //hash map>
 //each piece needs it's own validator
 //let's say i want to write a validator for a bishop
-//if it's a bishop it can move if there is no piece blocking it
+//if it's a bishop it can moveValidator if there is no piece blocking it
 //diagonally
 
 //first lets check if the destination is within range
@@ -143,9 +149,9 @@ var bishopTest = {
 
 //bishop
 
-//can't move onto it's own rank or file
-//can only move diagonal
-//how is the board supposed to know what a diagonal move is?
+//can't moveValidator onto it's own rank or file
+//can only moveValidator diagonal
+//how is the board supposed to know what a diagonal moveValidator is?
 //relative to its own postion
 
 //is it +letter in proportion to +number 1 for 1?
@@ -170,7 +176,7 @@ var bishopTest = {
 
 
 //how to check if piece on bishop path?
-//if move valid
+//if moveValidator valid
 //if there is a piece between the two points
 //convert each number up to end into a string
 //check if any string is a key in the map
@@ -295,29 +301,61 @@ function getDiagonalPath(nota1, nota2, x, y) {
   else { return false }
 }
 
+
+
 function compare(a, b) { return a[0] === b[0] && a[1] === b[1]}
 
-function isPawnPathClear(nota1, nota2, endNota, color) {
+function isKnightPathClear(nota1, nota2) {
   var x1 = nota1[0]; var y1 = nota1[1];
   var x2 = nota2[0]; var y2 = nota2[1];
-  if (color === 'white') {
-    return (
-      (((x1 === x2) && (y1 < y2)) && ((y2 === y1+2) && (y1 === 2)) && (!(board[endNota])))
-        ||
-          ((y2 === y1+1) && (!(board[endNota])))
-            ||
-              (((x2 === x1+1) || (x2 === x1-1)) && ((y2 === y1+1) && (board[endNota])))
-            )
+  return (((x2 === x1 + 2) && ((y2 === y1+1) || (y2 === y1 -1))) ||
+  ((x2 === x1 + 1) && ((y2 === y1 -2) || (y2 === y1 +2))) ||
+  ((x2 === x1 - 1) && ((y2 === y1 - 2) || (y2 === y1 + 2))) ||
+  ((x2 === x1 -2) && ((y2 === y1 -1) || (y2 === y1 + 1))))
+}
+
+function isPawnPathClear(nota1, nota2, endPos, color, board) {
+  function enPassantPossible(endSquare) {
+  var fromRank = board['LastMove'].from[1]
+  var toRank = board['LastMove'].to[1]
+  var emptySquare = (!(board[endSquare]))
+  var lastPieceColor = board['LastMove'].color
+  var whiteJustMovedTwo = ((lastPieceColor === 'WHITE') && (fromRank == 2) && (toRank == 4))
+  var blackJustMovedTwo = ((lastPieceColor === 'BLACK') && (fromRank == 7) && (toRank == 5))
+  console.log((emptySquare) && (whiteJustMovedTwo || blackJustMovedTwo) && (endPos[0] ===  board['LastMove'].to[0]), 'this 326')
+
+  return (emptySquare) && (whiteJustMovedTwo || blackJustMovedTwo) && (endPos[0] ===  board['LastMove'].to[0])
+}
+  var x1 = nota1[0]; var y1 = nota1[1];
+  var x2 = nota2[0]; var y2 = nota2[1];
+  var love = board
+  var whiteCanMoveTwoAhead = (((x1 === x2) && (y1 < y2)) && ((y2 === y1+2) && (y1 === 2)) && (!(board[endPos])))
+  var whiteCanMoveOneAhead = ((y2 === y1+1) && (x1 === x2) && (!(board[endPos])))
+    console.log(whiteCanMoveOneAhead, 'here')
+  console.log('whiteCanMoveTwoAhead', whiteCanMoveTwoAhead)
+  console.log('enPassantPossible', enPassantPossible(endPos))
+  var whiteCanCapture = (((x2 === x1+1) || (x2 === x1-1)) && ((y2 === y1+1) && (board[endPos])))
+  console.log(board[endPos], endPos)
+  console.log(x2, x1)
+  console.log(((x2 === x1+1) || (x2 === x1-1)), 'moving left or right?')
+    console.log('whiteCanCapture', whiteCanCapture)
+  var whiteInCaptureRange = (((x2 === x1+1) || (x2 === x1-1)) && (y2 === y1+1))
+  var blackCanMoveTwoAhead = ((((x1 === x2) && (y1 > y2)) && (y2 === y1-2) && y1 === 7) && (!(board[endPos])))
+  console.log(blackCanMoveTwoAhead, 'blackCanMoveTwoAhead')
+  var blackCanMoveOneAhead = ((y2 === y1-1) && (x1 === x2) && (!(board[endPos])))
+  console.log(blackCanMoveOneAhead, 'blackCanMoveOneAhead')
+  var blackCanCapture = (((x2 === x1+1) || (x2 === x1-1)) && (y2 === y1-1) && (board[endPos]))
+  var blackInCaptureRange = (((x2 === x1+1) || (x2 === x1-1)) && (y2 === y1-1))
+  if (color === 'WHITE') {
+    return (whiteCanMoveTwoAhead || whiteCanMoveOneAhead || whiteCanCapture || ((enPassantPossible(endPos, board)) && whiteInCaptureRange))
   }
-  if (color === 'black') {
-    return (
-      ((((x1 === x2) && (y1 > y2)) && (y2 === y1-2) && y1 === 7) && (!(board[endNota])))
-        ||
-          ((y2 === y1-1) && (!(board[endNota])))
-            ||
-              (((x2 === x1+1) || (x2 === x1-1)) && (y2 === y1-1) && (board[endNota]))
-            )
+  if (color === 'BLACK') {
+    return (blackCanMoveTwoAhead||blackCanMoveOneAhead||blackCanCapture|| ((enPassantPossible(endPos, board)) && blackInCaptureRange))
   }
+}
+
+function isRookPathClear(nota1, nota2) {
+
 }
 
 function isDiagonalPathClear(nota1, nota2) {
@@ -369,131 +407,91 @@ function isDiagonalPathClear(nota1, nota2) {
   }
 }
 
-function move(begInput, endInput) {
-  var beginPos = begInput.toUpperCase();
-  var endPos = endInput.toUpperCase();
-  if (bishopTest.hasOwnProperty(beginPos)) {
-    beginPosCoor = coordinates(beginPos)
-    endPosCoor = coordinates(endPos)
-    // if (bishopTest[endPos]) {
-    //   console.log('there is something here')
-    //   if (bishopTest[endPos].color === bishopTest[beginPos].color) {
-    //     return false
-    //   }
-    // }
-    if (bishopTest[beginPos].type === "BISHOP") {
-      if (isDiagonalPathClear(beginPosCoor, endPosCoor)) {
-        return true
-      }
+function move(first, second){
+  var pawnTest = {
+    'A3': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'A5': {'type': 'KNIGHT', 'color': 'WHITE'},
+    'B2': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'B6': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'C4': {'type': 'KNIGHT', 'color': 'WHITE'},
+    'D2': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'D6': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'F3': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'F5': {'type': 'KNIGHT', 'color': 'BLACK'},
+    'LastMove': {'type': 'PAWN', 'color': 'BLACK', 'from': 'A7', 'to': 'A5'}
+  }
+  function moveValidator(begInput, endInput, board) {
+    //console.log(pawnTest.LastMove)
+    var beginPos = begInput.toUpperCase();
+    var endPos = endInput.toUpperCase();
+
+
+    if (pawnTest[beginPos]) {
+      var pieceIsBishop = (pawnTest[beginPos].type === "BISHOP")
+      var pieceIsPawn = (pawnTest[beginPos].type === "PAWN")
+      var pieceIsKnight = (pawnTest[beginPos].type === "KNIGHT")
+      var whiteTurn = ((pawnTest[beginPos]) && ((pawnTest.LastMove.color === 'BLACK') || (pawnTest === undefined)))
+      var blackTurn = (pawnTest[beginPos]) && (pawnTest.LastMove.color === 'WHITE')
+      var notTakingWhite = ((pawnTest[endPos] === undefined) || (pawnTest[endPos].color === 'BLACK'))
+      var notTakingBlack = ((pawnTest[endPos] === undefined) || (pawnTest[endPos].color === 'WHITE'))
+      if ((whiteTurn && notTakingWhite) || (blackTurn && notTakingBlack)) {
+        beginPosCoor = coordinates(beginPos)
+        endPosCoor = coordinates(endPos)
+        if (pieceIsBishop) {return isDiagonalPathClear(beginPosCoor, endPosCoor)}
+        if(pieceIsPawn) {
+          console.log('bitch', 'pawn')
+          return isPawnPathClear(beginPosCoor, endPosCoor, endInput.toUpperCase(), pawnTest[beginPos].color, pawnTest)}
+        if (pieceIsKnight) {
+          console.log(isKnightPathClear(beginPosCoor, endPosCoor))
+
+          return isKnightPathClear(beginPosCoor, endPosCoor)}
+        }
     }
   }
-}
-//after it is true i want to take the path from pathval
-//here i have a function that returns a boolean
-//the function only checks one out of four relative quadrants
-//how do i expand the functionality to check the other quadrants so that
-//i'm not repeating myself
-//take the largest of the Inits
-//make value a counter
-//inrement it every loop
-//each path function returns boolean
-//the queen is going to share in rook path and bishop path
-//so i should just call it diagonal path
-//each path function takes two arguments
-// call rook path straight path
-// 4 conditionals
-// if 1st number equal, 2nd larger (2nd up to 8)
-// if 1st number equal, 2nd smaller (2nd down to 1)
-// if 1st larger, 2nd equal (1st up to 8)
-// if 1st smaller, 2nd equal (1st down to 1)
-
-//actually...instead of down to /up to 1/8 can i do instead
-// the value of notation
-//this wouldn't work in the case of the bishop
-//i have to go the full path
-//how will it know to stop when an array pair matches note2?
-//while? or for?
-
-//what did i spend the most time on?
-
-
-// for each path make and ordered array containing each pair on the path
-
-
-
-
-
-//i've got of numbers now
-//now I need to get a list of number pairs that are on the path
-//first let's write this in the case of the bishop
-
-//how to check every path for bishop
-//take note2's number pair
-//make an array
-//push araays containing [x+1,x+1] x = note1numbers
-// if either number in the pair is equal to 8 stop
-// or if the
-//keep adding +1 until one of the numbers in the pair is equal to 8
-//
-//
-//would i have the loop stop when an pair is equal to note 2 number pair?
-//or would i have to loop stop when one number in the pair equal to 8?
-//what would happen in each case?
-//if i reach a pair equal to my 2nd note/
-//i don't need to count past 2nd note pair
-//i must have each pair in order
-//after it gets out of loop
-//loop over the array and convert each number pair in the array
-//into board square format
-
-//loop through this new array and check and see if
-//there is a key in the data structure
-//if there is 'invalid move'
-//otherwise
-//move to
-//didn't consider the path downward
-// another conditional statement
-// in both places, what should the conditional be
-// it depends where end position is in relation to current postion
-// 4 conditionals, 4 paths
-// if the 1st and 2nd numbers are larger (up to 8 both numbers)
-//if the 1rst is larger, 2nd smaller (up to 8 first number, down to 1 2nd num)
-//if the 1st smaller, 2nd larger (down to 1, up to 8)
-//if both are smaller (both down to 8)
-
-//make the first letter into a number
-//so now I got an array the k & boardsquare
-//i need to change if
-//var note1 = converter(notation1)
-//what do I do once I check if it's there
-//gotta get the piece and then see if notation2 is in path
-//must make a function that converts the note into a number pair array
-//
-// function validator(notation1, notation2) {
-//   var note1 = notation1.toUpperCase()
-//   if (board.hasOwnProperty(note1)) {}
-// }
-if (move('D4', 'f2')) {
-  console.log('move valid')
-}
-else {
-  console.log('move invalid')
+  if (moveValidator(first, second, pawnTest)) {
+    console.log(moveValidator(first, second, pawnTest), 'here')
+    console.log(newBoard(pawnTest, first, second));
+    return true
+  }
 }
 
-console.log(!(board[777]))
+function newBoard(oldBoard, first, second) {
+  var board = {}
+  var tempBoard = oldBoard
+  tempBoard.LastMove = newLogHistory(first, second, tempBoard)
+  tempBoard[second] = tempBoard[first]
+  delete tempBoard[first]
+  return tempBoard;
+}
+
+
+function newLogHistory(first, second, board) {
+  var newLastMove = {}
+
+  newLastMove.type = board[first].type
+  newLastMove.color = board[first].color
+  newLastMove.from = first
+  newLastMove.to = second
+  return newLastMove
+}
+function updateBoard() {
+
+}
+if(move('C4', 'A5')) {console.log('hell yes')}
+else {console.log('hell no')}
 
 /* List of questions
 
-1) How does move know if black/white turn?
-ANSWER: Reference history for last move.
+1) How does moveValidator know if BLACK/WHITE turn?
+ANSWER: Reference history for last moveValidator.
 2) How to tell if KING in check?
 3) How to tell if ROOK or KING moved?
 4) How to tell if PAWN vulnerable for EN PASSANT?
 5) How to trigger promotion?
-6) How to get white's move as default to start?
+6) How to get WHITE's moveValidator as default to start?
 ANSWER: If no history.length is < 1
-only white can move
+only WHITE can moveValidator
 
-Only if move valid will there be history.push() &
+Only if moveValidator valid will there be history.push() &
 change of board state.
 */
