@@ -225,17 +225,27 @@ var Notation = function(number) {
   return numMap[number]
 }
 
-function isPathClear(array, nota2, board) {
+function isPathClear(array, nota1, nota2, board) {
+  console.log(nota2, 'nota2')
   var path = array
   var pathClear = false
+  var beginPos = arrayNotation(nota1)
+  console.log(nota1,'here')
+  console.log('nota2', nota2, 'nota2')
+  var endPos = arrayNotation(nota2)
   console.log('225')
   console.log(path)
   var numberOfPiecesOnPath = path.filter(function(e) {return board[e]}).length
-  console.log(numberOfPiecesOnPath)
+  console.log(numberOfPiecesOnPath, 'number of pieces')
   var destination = path.length
   //console.log(path.filter(function(e) {return map[e]}), '37')
-  if (numberOfPiecesOnPath > 0) {
+  console.log(board, nota1, 'board and nota1')
+
+  if ((numberOfPiecesOnPath > 0) && (board[endPos]) && (board[beginPos].color !== board[endPos].color)) {
     console.log('path is greater than zero')
+    return true
+  }
+  else if (numberOfPiecesOnPath > 0) {
     return false
   }
   else {
@@ -252,6 +262,57 @@ function isPathClear(array, nota2, board) {
     // else if (path[square] in board) {
     //   return false
     // }
+  }
+}
+
+function isRookPathClear(nota1, nota2, board) {
+  var x1 = nota1[0]; var y1 = nota1[1];
+  var x2 = nota2[0]; var y2 = nota2[1];
+  if ((x1 = x2) && (y1 < y2)) {
+    var type = "ROOK1"
+    var xDirection = 0
+    var yDirection = 1
+    path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type)
+    console.log('here', path, 'this is the path')
+    if (path.length > 0) {
+      notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota1, nota2, board)
+    }
+    else {return false}
+  }
+  else if ((x1 = x2) && (y1 > y2)) {
+    var type = "ROOK2"
+    var xDirection = 0
+    var yDirection = -1
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type)
+    if (path.length > 0) {
+      var notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota1, nota2, board)
+    }
+    else {return false}
+  }
+  else if ((x1 > x2) && (y1 = y2)) {
+    var type = "ROOK3"
+    var xDirection = -1
+    var yDirection = 0
+    path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type)
+    if (path.length > 0) {
+      var notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota2, board)
+    }
+    else {return false}
+  }
+  else if ((x1 < x2) && (y1 = y2)) {
+    var type = "ROOK4"
+    console.log('testing my rook')
+    var xDirection = 1
+    var yDirection = 0
+    path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type)
+    if (path.length > 0) {
+      var notatedPath = pathNotation(path)
+      return isPathClear(notatedPath, nota2, board)
+    }
+    else {return false}
   }
 }
 
@@ -272,6 +333,8 @@ function converter(notation) {
   return notation.toUpperCase();
 }
 
+// position should be notation for consistency
+// you thought position was an array, but it's a string
 function coordinates(position) {
   var pair = [];
   pair.push(position.slice(0,1));
@@ -281,30 +344,119 @@ function coordinates(position) {
   return pair
 }
 
-function getDiagonalPath(nota1, nota2, x, y) {
+function getDiagonalPath(nota1, nota2, x, y, type) {
   console.log('getDiagonalPath lines 89-107 adds steps to the path')
   var path = [];
   var step = [nota1[0], nota1[1]]
-  while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0] - x) && (step[1] !== nota2[1] - y)) {
-    step = [step[0]+x, step[1]+y]
-    console.log(step)
-    if ((step[0] < 9) && (step[1] < 9)) {
-      path.push(step)
+  console.log(step)
+  if (type === 'BISHOP') {
+    // TODO refactor condition in to helpers like isInBounds(coordinates) and coordinatesEqual(coordinatesOne, coordinatesTwo)
+    while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0]) && (step[1] !== nota2[1])) {
+      console.log('anything?') // TODO remove unused console.logs
+      step = [step[0]+x, step[1]+y]
+      console.log(step, 'new step')
+      // TODO test and see if a full isInBounds check is needed here (bishop moving down)
+      if ((step[0] < 9) && (step[1] < 9)) {
+        path.push(step)
+      }
+      console.log(path)
     }
+    console.log(path,nota2, 'this is path in getDiagonalPath')
+    filtered = path.filter(function(e) {return (compare(e, nota2))})
+    console.log(filtered, 'here')
+    if (path.length > 0) {
+      return path
+    }
+    else { return false }
   }
-  console.log(path,nota2, 'this is path in getDiagonalPath')
-  filtered = path.filter(function(e) {return (compare(e, nota2))})
-  console.log(filtered, 'here')
-  if (path.length > 0) {
-    return path
+  if (type === 'ROOK1') {
+    while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[1] !== nota2[1])) {
+      console.log('anything?')
+      step = [step[0]+x, step[1]+y]
+      console.log(step, 'new step')
+      if ((step[0] < 9) && (step[1] < 9)) {
+        path.push(step)
+      }
+      console.log(path)
+    }
+    console.log(path,nota2, 'this is path in getDiagonalPath')
+    filtered = path.filter(function(e) {return (compare(e, nota2))})
+    console.log(filtered, 'here')
+    if (path.length > 0) {
+      return path
+    }
+    else { return false }
   }
-  else { return false }
+  if (type === 'ROOK2') {
+    while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[1] !== nota2[1])) {
+      console.log('anything?')
+      step = [step[0]+x, step[1]+y]
+      console.log(step, 'new step')
+      if ((step[0] < 9) && (step[1] < 9)) {
+        path.push(step)
+      }
+      console.log(path)
+    }
+    console.log(path,nota2, 'this is path in getDiagonalPath')
+    filtered = path.filter(function(e) {return (compare(e, nota2))})
+    console.log(filtered, 'here')
+    if (path.length > 0) {
+      return path
+    }
+    else { return false }
+  }
+  if (type === 'ROOK3') {
+    while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0])) {
+      console.log('anything?')
+      step = [step[0]+x, step[1]+y]
+      console.log(step, 'new step')
+      if ((step[0] < 9) && (step[1] < 9)) {
+        path.push(step)
+      }
+      console.log(path)
+    }
+    console.log(path,nota2, 'this is path in getDiagonalPath')
+    filtered = path.filter(function(e) {return (compare(e, nota2))})
+    console.log(filtered, 'here')
+    if (path.length > 0) {
+      return path
+    }
+    else { return false }
+  }
+  if (type === 'ROOK4') { // TODO don't extend type / direction, make direction logic distinct
+    while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0])) {
+      console.log('anything?')
+      step = [step[0]+x, step[1]+y]
+      console.log(step, 'new step')
+      if ((step[0] < 9) && (step[1] < 9)) {
+        path.push(step)
+      }
+      console.log(path)
+    }
+    console.log(path,nota2, 'this is path in getDiagonalPath')
+    filtered = path.filter(function(e) {return (compare(e, nota2))})
+    console.log(filtered, 'here')
+    if (path.length > 0) {
+      return path
+    }
+    else { return false }
+  }
+  //step[0/1] !== nota2[0/1] does not work for every case/direction/piece
+
 }
 
-
+function isKingPathClear(nota1, nota2) {
+  var x1 = nota1[0]; var y1 = nota1[1];
+  var x2 = nota2[0]; var y2 = nota2[1];
+  // TODO this really needs helper functions, is really hard to understand
+  return(((x2 = x1) && (y2 = y1 +1)) || ((x2 = x1 +1) && (y2 = y2+1)) ||
+  ((x2 = x1 +1) && (y2 = y1)) || ((x2 = x1 +1) && (y2 = y1 -1)) || ((x2 = x1) && (y2 = y1 -1)) ||
+  (x2 = x1 -1) && (y2 = y1 -1) || ((x2 = x1 -1) && (y2 = y1)) || ((x2 = x1 -1) && (y2 = y1 +1)))
+}
 
 function compare(a, b) { return a[0] === b[0] && a[1] === b[1]}
 
+// TODO this is validating the move target, not just the "clearness of the path", making it confusing/nonsemantic
 function isKnightPathClear(nota1, nota2) {
   var x1 = nota1[0]; var y1 = nota1[1];
   var x2 = nota2[0]; var y2 = nota2[1];
@@ -314,6 +466,7 @@ function isKnightPathClear(nota1, nota2) {
   ((x2 === x1 -2) && ((y2 === y1 -1) || (y2 === y1 + 1))))
 }
 
+// TODO refactor
 function isPawnPathClear(nota1, nota2, endPos, color, board) {
   function enPassantPossible(endSquare) {
   var fromRank = board['LastMove'].from[1]
@@ -354,27 +507,28 @@ function isPawnPathClear(nota1, nota2, endPos, color, board) {
   }
 }
 
-function isRookPathClear(nota1, nota2) {
-
-}
-
-function isDiagonalPathClear(nota1, nota2) {
+function isDiagonalPathClear(nota1, nota2, board) {
   var x1 = nota1[0]; var y1 = nota1[1];
   var x2 = nota2[0]; var y2 = nota2[1];
+  var type = 'BISHOP'
+  console.log(x1, x2, y1, y2)
   if ((x2 > x1) && (y2 > y1)) {
     var xDirection = 1;
     var yDirection = 1;
-    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+    console.log(path, 'path')
     if (path.length > 0) {
       var notatedPath = pathNotation(path)
-      return isPathClear(notatedPath, nota2, board)
+      console.log(notatedPath)
+      console.log(isPathClear(notatedPath, nota1, nota2, board))
+      return isPathClear(notatedPath, nota1, nota2, board)
     }
     else {return false}
   }
   else if ((x2 > x1) && (y2 < y1)) {
     var xDirection = 1;
     var yDirection = -1;
-    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
     if (path) {
       var notatedPath = pathNotation(path)
       console.log(isPathClear(notatedPath, nota2, board))
@@ -387,10 +541,10 @@ function isDiagonalPathClear(nota1, nota2) {
     console.log('check133')
     var xDirection = -1;
     var yDirection = 1;
-    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
     if (path.length > 0) {
       var notatedPath = pathNotation(path)
-      return isPathClear(notatedPath, nota2, board)
+      return isPathClear(notatedPath, nota1, nota2, board)
     }
     else {return false}
   }
@@ -398,7 +552,7 @@ function isDiagonalPathClear(nota1, nota2) {
     console.log('check 145')
     var xDirection = -1;
     var yDirection = -1;
-    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection);
+    var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
     if (path.length > 0) {
       var notatedPath = pathNotation(path)
       return isPathClear(notatedPath, nota2, board)
@@ -409,16 +563,16 @@ function isDiagonalPathClear(nota1, nota2) {
 
 function move(first, second){
   var pawnTest = {
-    'A3': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'A5': {'type': 'KNIGHT', 'color': 'WHITE'},
-    'B2': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'B6': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'C4': {'type': 'KNIGHT', 'color': 'WHITE'},
-    'D2': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'D6': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'F3': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'F5': {'type': 'KNIGHT', 'color': 'BLACK'},
-    'LastMove': {'type': 'PAWN', 'color': 'BLACK', 'from': 'A7', 'to': 'A5'}
+    'A3': {'type': 'KING', 'color': 'BLACK'},
+    'A5': {'type': 'KING', 'color': 'WHITE'},
+    'B2': {'type': 'KING', 'color': 'BLACK'},
+    'B6': {'type': 'KING', 'color': 'BLACK'},
+    'C4': {'type': 'KING', 'color': 'WHITE'},
+    'D2': {'type': 'KING', 'color': 'BLACK'},
+    'D6': {'type': 'KING', 'color': 'BLACK'},
+    'F3': {'type': 'KING', 'color': 'BLACK'},
+    'F5': {'type': 'KING', 'color': 'BLACK'},
+    'LastMove': {'type': 'PAWN', 'color': 'WHITE', 'from': 'A7', 'to': 'A5'}
   }
   function moveValidator(begInput, endInput, board) {
     //console.log(pawnTest.LastMove)
@@ -430,6 +584,8 @@ function move(first, second){
       var pieceIsBishop = (pawnTest[beginPos].type === "BISHOP")
       var pieceIsPawn = (pawnTest[beginPos].type === "PAWN")
       var pieceIsKnight = (pawnTest[beginPos].type === "KNIGHT")
+      var pieceIsRook = (pawnTest[beginPos].type === "ROOK")
+      var pieceIsKing = (pawnTest[beginPos].type === "KING")
       var whiteTurn = ((pawnTest[beginPos]) && ((pawnTest.LastMove.color === 'BLACK') || (pawnTest === undefined)))
       var blackTurn = (pawnTest[beginPos]) && (pawnTest.LastMove.color === 'WHITE')
       var notTakingWhite = ((pawnTest[endPos] === undefined) || (pawnTest[endPos].color === 'BLACK'))
@@ -437,7 +593,7 @@ function move(first, second){
       if ((whiteTurn && notTakingWhite) || (blackTurn && notTakingBlack)) {
         beginPosCoor = coordinates(beginPos)
         endPosCoor = coordinates(endPos)
-        if (pieceIsBishop) {return isDiagonalPathClear(beginPosCoor, endPosCoor)}
+        if (pieceIsBishop) {return isDiagonalPathClear(beginPosCoor, endPosCoor, pawnTest)}
         if(pieceIsPawn) {
           console.log('bitch', 'pawn')
           return isPawnPathClear(beginPosCoor, endPosCoor, endInput.toUpperCase(), pawnTest[beginPos].color, pawnTest)}
@@ -445,7 +601,13 @@ function move(first, second){
           console.log(isKnightPathClear(beginPosCoor, endPosCoor))
 
           return isKnightPathClear(beginPosCoor, endPosCoor)}
+        if (pieceIsRook) {
+          return isRookPathClear(beginPosCoor, endPosCoor, pawnTest)
         }
+        if (pieceIsKing) {
+          return isKingPathClear(beginPosCoor, endPosCoor)
+        }
+      }
     }
   }
   if (moveValidator(first, second, pawnTest)) {
@@ -477,7 +639,7 @@ function newLogHistory(first, second, board) {
 function updateBoard() {
 
 }
-if(move('C4', 'A5')) {console.log('hell yes')}
+if(move('A3', 'A4')) {console.log('hell yes')}
 else {console.log('hell no')}
 
 /* List of questions
@@ -486,7 +648,9 @@ else {console.log('hell no')}
 ANSWER: Reference history for last moveValidator.
 2) How to tell if KING in check?
 3) How to tell if ROOK or KING moved?
+ANSWER: add a "moved" attribute
 4) How to tell if PAWN vulnerable for EN PASSANT?
+ANSWER: Reference history for last moveValidator.
 5) How to trigger promotion?
 6) How to get WHITE's moveValidator as default to start?
 ANSWER: If no history.length is < 1

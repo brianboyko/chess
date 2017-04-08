@@ -1,0 +1,17 @@
+{
+  "name": "Chess",
+  "version": "0.0.1",
+  "description": "a fun little game of chess",
+  "main": "dist/index.js",
+  "repository": "https://github.com/herzogian/chess.git",
+  "author": "Drew Greenstein",
+  "license": "MIT",
+  "scripts": {
+    "start": "node dist/index.js",
+    "watch": "webpack chessprototype.js dist/index.js --watch"
+  },
+  "devDependencies": {
+    "webpack": "^2.3.3",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
