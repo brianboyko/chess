@@ -3,7 +3,6 @@
 import * as utilities from './lib/utilities.js'
 import * as update from './lib/update.js'
 import * as validate from './lib/validate.js'
-console.log('something sweird is going on');
 
 function move(first, second) {
     var pawnTest = {

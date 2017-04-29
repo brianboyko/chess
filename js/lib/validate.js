@@ -1,21 +1,27 @@
 import { arrayNotation, pathNotation, compare, coordinates, isEndPositionInPath } from './utilities'
 
 function isQueenPathClear(nota1, nota2, board) {
-  console.log(isRookPathClear(nota1, nota2, board), 'rook')
-  console.log(isDiagonalPathClear(nota1, nota2, board), 'diagonal');
   return isRookPathClear(nota1, nota2, board) || isDiagonalPathClear(nota1, nota2, board)
 }
-
+function endinPosition(array, endPosition) {
+  var inArray = false
+  for(var i = 0; i < array.length; i++) {
+    var elem = array[i];
+    if ((elem[0] === endPosition[0]) && (elem[1] === endPosition[1])) {
+      inArray = true
+    }
+    else { return false }
+  }
+  return inArray;
+}
 export function isPathClear(array, nota1, nota2, board) {
     var path = array;
     var pathClear = false;
-    console.log(nota2, 'why is this here?')
     var beginPos = arrayNotation(nota1);
     var endPos = arrayNotation(nota2);
     var numberOfPiecesOnPath = path.filter(function(e) {
         return board[e]
     }).length;
-    console.log(endPos, 'endPos', board[endPos], 'boardendpos', board[beginPos].color, 'boardposcolor');
     var destination = path.length;
     //console.log(path.filter(function(e) {return map[e]}), '37')
 
@@ -51,7 +57,7 @@ export function isRookPathClear(nota1, nota2, board) {
         var type = "QUEENROOK1";
         var xDirection = 0;
         var yDirection = 1;
-        path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+        path = getLinearPath(nota1, nota2, xDirection, yDirection, type);
         if (path.length > 0) {
             notatedPath = pathNotation(path)
             return isPathClear(notatedPath, nota1, nota2, board)
@@ -62,7 +68,7 @@ export function isRookPathClear(nota1, nota2, board) {
         var type = "QUEENROOK2";
         var xDirection = 0;
         var yDirection = -1;
-        var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+        var path = getLinearPath(nota1, nota2, xDirection, yDirection, type);
         if (path.length > 0) {
             var notatedPath = pathNotation(path);
             return isPathClear(notatedPath, nota1, nota2, board);
@@ -73,7 +79,7 @@ export function isRookPathClear(nota1, nota2, board) {
         var type = "QUEENROOK3";
         var xDirection = -1;
         var yDirection = 0;
-        path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type)
+        path = getLinearPath(nota1, nota2, xDirection, yDirection, type)
         if (path.length > 0) {
             var notatedPath = pathNotation(path);
             return isPathClear(notatedPath, nota1, nota2, board);
@@ -82,10 +88,9 @@ export function isRookPathClear(nota1, nota2, board) {
         };
     } else if ((x1 < x2) && (y1 === y2)) {
         var type = "QUEENROOK4";
-        console.log('testing my rook')
         var xDirection = 1;
         var yDirection = 0;
-        path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type)
+        path = getLinearPath(nota1, nota2, xDirection, yDirection, type)
         if (path.length > 0) {
             var notatedPath = pathNotation(path);
             return isPathClear(notatedPath, nota2, board);
@@ -95,13 +100,16 @@ export function isRookPathClear(nota1, nota2, board) {
     }
 }
 
-export function getDiagonalPath(nota1, nota2, x, y, type) {
+export function getLinearPath(nota1, nota2, x, y, type) {
     var path = [];
     var step = [nota1[0], nota1[1]];
+    console.log(step, 'all')
     if (type === 'QUEENBISHOP') {
+      console.log('hit QUEENBISHOP at least')
         // TODO refactor condition in to helpers like isInBounds(coordinates) and coordinatesEqual(coordinatesOne, coordinatesTwo)
         while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0]) && (step[1] !== nota2[1])) {
             step = [step[0] + x, step[1] + y];
+            console.log(step, 'stepqueenbishop')
             // TODO test and see if a full isInBounds check is needed here (bishop moving down)
             if ((step[0] < 9) && (step[1] < 9)) {
                 path.push(step);
@@ -110,15 +118,19 @@ export function getDiagonalPath(nota1, nota2, x, y, type) {
         var filtered = path.filter(function(e) {
             return (compare(e, nota2))
         })
-        if (path.length > 0) {
+        if (path.length > 0 && endinPosition(path, nota2)) {
+          console.log(path)
             return path;
         } else {
+          console.log("false")
             return false;
         }
     }
     if (type === 'QUEENROOK1') {
+      console.log('hitqueenrook1 at least')
         while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[1] !== nota2[1])) {
-            step = [step[0] + x, step[1] + y]
+            step = [step[0] + x, step[1] + y];
+            console.log(step)
             if ((step[0] < 9) && (step[1] < 9)) {
                 path.push(step);
             }
@@ -126,15 +138,18 @@ export function getDiagonalPath(nota1, nota2, x, y, type) {
         var filtered = path.filter(function(e) {
             return (compare(e, nota2))
         })
-        if (path.length > 0) {
+        console.log(path, 'path of queenrook1')
+        if (path.length > 0 && endinPosition(path, nota2)) {
             return path;
         } else {
             return false;
         }
     }
     if (type === 'QUEENROOK2') {
+      console.log('hit queenrook2 at least')
         while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[1] !== nota2[1])) {
             step = [step[0] + x, step[1] + y];
+            console.log('between', step, 'stepqueeenrook2')
             if ((step[0] < 9) && (step[1] < 9)) {
                 path.push(step);
             }
@@ -142,15 +157,17 @@ export function getDiagonalPath(nota1, nota2, x, y, type) {
         var filtered = path.filter(function(e) {
             return (compare(e, nota2));
         })
-        if (path.length > 0) {
+        if (path.length > 0 && endinPosition(path, nota2)) {
             return path;
         } else {
             return false;
         }
     }
     if (type === 'QUEENROOK3') {
+      console.log('hit queenrook3 at least')
         while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0])) {
             step = [step[0] + x, step[1] + y];
+            console.log(step, 'stepqueenrook3');
             if ((step[0] < 9) && (step[1] < 9)) {
                 path.push(step);
             }
@@ -158,23 +175,25 @@ export function getDiagonalPath(nota1, nota2, x, y, type) {
         var filtered = path.filter(function(e) {
             return (compare(e, nota2));
         })
-        if (path.length > 0) {
+        if (path.length > 0 && endinPosition(path, nota2)) {
             return path;
         } else {
             return false;
         }
     }
     if (type === 'QUEENROOK4') { // TODO don't extend type / direction, make direction logic distinct
+        console.log('hit queenrook4 at least')
         while ((step[0] >= 1) && (step[1] >= 1) && (step[0] <= 8) && (step[1] <= 8) && (step[0] !== nota2[0])) {
             step = [step[0] + x, step[1] + y];
+            console.log(step);
             if ((step[0] < 9) && (step[1] < 9)) {
-                path.push(step);
+                path.push(step, 'stepqueenrook4');
             }
         }
         var filtered = path.filter(function(e) {
             return (compare(e, nota2))
         })
-        if (path.length > 0) {
+        if (path.length > 0 && endinPosition(path, nota2)) {
             return path;
         } else {
             return false
@@ -261,7 +280,7 @@ export function isDiagonalPathClear(nota1, nota2, board) {
     if ((x2 > x1) && (y2 > y1)) {
         var xDirection = 1;
         var yDirection = 1;
-        var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+        var path = getLinearPath(nota1, nota2, xDirection, yDirection, type);
         if (path.length > 0) {
             var notatedPath = pathNotation(path);
             return isPathClear(notatedPath, nota1, nota2, board);
@@ -271,7 +290,7 @@ export function isDiagonalPathClear(nota1, nota2, board) {
     } else if ((x2 > x1) && (y2 < y1)) {
         var xDirection = 1;
         var yDirection = -1;
-        var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+        var path = getLinearPath(nota1, nota2, xDirection, yDirection, type);
         if (path.length > 0) {
             var notatedPath = pathNotation(path);
             return isPathClear(notatedPath, nota1, nota2, board);
@@ -282,7 +301,7 @@ export function isDiagonalPathClear(nota1, nota2, board) {
     } else if ((x2 < x1) && (y2 > y1)) {
         var xDirection = -1;
         var yDirection = 1;
-        var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+        var path = getLinearPath(nota1, nota2, xDirection, yDirection, type);
         if (path.length > 0) {
             var notatedPath = pathNotation(path)
             return isPathClear(notatedPath, nota1, nota2, board)
@@ -292,7 +311,7 @@ export function isDiagonalPathClear(nota1, nota2, board) {
     } else if ((x2 < x1) && (y2 < y1)) {
         var xDirection = -1;
         var yDirection = -1;
-        var path = getDiagonalPath(nota1, nota2, xDirection, yDirection, type);
+        var path = getLinearPath(nota1, nota2, xDirection, yDirection, type);
         if (path.length > 0) {
             var notatedPath = pathNotation(path);
             return isPathClear(notatedPath, nota2, board);

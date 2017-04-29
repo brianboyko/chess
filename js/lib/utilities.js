@@ -27,7 +27,6 @@ export var notation = function(number) {
 };
 
 export function arrayNotation(array) {
-    console.log(array, 'this is the supposed array')
     var letter = notation(array[0]);
     var number = array[1].toString();
     return letter + number;

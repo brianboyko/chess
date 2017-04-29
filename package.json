@@ -10,7 +10,7 @@
     "transpile": "babel js -d lib",
     "pack": "webpack",
     "pack-n-run": "webpack && npm run start",
-    "start": "node dist/index.js",
+    "start": "node dist/bundle.js",
     "watch": "webpack chessprototype.js dist/index.js --watch"
   },
   "devDependencies": {
